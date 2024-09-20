@@ -7,9 +7,9 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
-import { getToken, decodeToken } from "../Functions/auth";
+import { getToken, decodeToken } from "../Functions/auth"; // Ensure getToken is working correctly
 import cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
+// import jwtDecode from "jwt-decode"; // Using jwt-decode directly
 
 interface AuthContextType {
   user: string | null;
@@ -40,41 +40,43 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const [token, setToken] = useState<string | null>(null);
 
   const fetchAuthData = async () => {
-
     const tokenData = getToken();
+    
     if (!tokenData) {
-      // กรณีที่ไม่มี token ให้ตั้งค่า user และ token เป็น null และหยุดการทำงาน
+      // If no token is found, set user and token to null
       setUser(null);
       setToken(null);
-      setLoading(false);
+      setLoading(false); // Always stop loading
       return;
     }
 
-    // console.log("Token exists, decoding...");
+    try {
+      // Using jwt-decode directly
+      const decodedToken: DecodeToken | null = decodeToken(tokenData);
 
-    const decodedToken = decodeToken(tokenData);
-    if (decodedToken) {
-      const { username, exp } = decodedToken;
-      // console.log(username, exp);
+      if (decodedToken) {
+        const { username, exp } = decodedToken;
 
-      // เช็คว่าหมดอายุหรือยัง
-      if (exp * 1000 < Date.now()) {
-        cookies.remove("token");
-        setUser(null);
-        setToken(null);
-        setLoading(false);
-        return;
+        // Check if the token has expired
+        if (exp * 1000 < Date.now()) {
+          cookies.remove("token");
+          setUser(null);
+          setToken(null);
+        } else {
+          // Token is valid, set user and token
+          setUser(username);
+          setToken(tokenData);
+        }
       }
-
-      // ถ้าไม่หมดอายุ ตั้งค่า user และ token
-      setUser(username);
-      setToken(tokenData);
-    } else {
+    } catch (error) {
+      // Handle decoding errors
+      console.error("Error decoding token:", error);
       setUser(null);
       setToken(null);
+    } finally {
+      // Always stop loading after the check
+      setLoading(false);
     }
-
-    setLoading(false); // ตั้งค่าให้เสร็จสิ้นการโหลด
   };
 
   useEffect(() => {
@@ -97,3 +99,5 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     </AuthContext.Provider>
   );
 };
+
+

@@ -63,6 +63,22 @@ export const login = async (userData: userDataType) => {
       return null;
     }
     return res;
-
-  
 };
+
+export const getUserIdByUsername = async (username: string) => {
+  const token = getToken();
+  const res = await fetch(process.env.NEXT_PUBLIC_API_PATH + "/getUserIdByUsername", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({username})
+  });
+
+  if (!res.ok) {
+    console.error("Failed to fetch", res.statusText);
+  } 
+  
+  return res;
+}

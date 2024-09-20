@@ -1,9 +1,8 @@
 import { getToken } from "./auth";
+import type { Project,  CreateProjectType } from "../Types/type";
 
 // Function to list projects
 export const list = async () => {
-
-
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_PATH}/projects`, {
         method: "GET",
         headers: {
@@ -97,4 +96,21 @@ export const getTop5 = async () => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_PATH}/`)
 }
 
+export const create = async (form: CreateProjectType) => {
+    // console.log("intest: ",form)
+    const token = getToken();
+    if (!token) {
+        console.log("No token found. Please login first.");
+        return null;  // Return null if there's no token
+    }
 
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_PATH}/projects`, {
+        method: "POST",
+        headers: {
+            "Content-Type" : "application/json",
+            "authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(form)
+    })
+    return res;
+}
