@@ -10,6 +10,10 @@ const nextConfig = {
                 protocol : 'https',
                 hostname : 'png.pngtree.com',
             },
+            {
+                protocol: 'http',
+                hostname: 'localhost'
+            }
         ],
     },
 };
