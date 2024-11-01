@@ -1,12 +1,11 @@
 "use client"
-import AllProject from '@/components/default/(admin)/AllProject'
-import ApprovedProject from '@/components/default/(admin)/ApprovedProject'
-import PendingProjects from '@/components/default/(admin)/PendingProjects'
-import Transactions from '@/components/default/(admin)/Transactions'
-import UsersList from '@/components/default/(admin)/UsersList'
+import Transactions from '@/components/default/(user)/Transactions'
+import AllProject from '@/components/default/(user)/AllProject'
+import PendingProjects from '@/components/default/(user)/PendingProjects'
+import UsersList from '@/components/default/(user)/UsersList'
 import React, { useState } from 'react'
 
-const AdminPage = () => {
+const ProfilePage = () => {
 
     const [currentPage, setCurrentPage] = useState(0)
 
@@ -16,18 +15,18 @@ const AdminPage = () => {
             page: <AllProject/>
         }, {
             name: "Approved Projects",
-            page: <ApprovedProject/>
+            page: <AllProject/>
         }, {
             name: "Pending Projects",
             page: <PendingProjects/>
-        },  {
+        }, {
             name: "Transactions",
             page: <Transactions/>
         }
     ]
 
     return (
-        <div className='flex flex-row '>
+        <div className='flex flex-row'>
             {/* LEFT PANEL */}
             <div className='w-1/6 min-h-[calc(100vh-100px)] bg-[#f7f7f9] border-r-2 border-gray-600  '>
                 <span className='text-black relative ml-4 mt-4 block text-xl'>Pages</span>
@@ -45,4 +44,4 @@ const AdminPage = () => {
     )
 }
 
-export default AdminPage
+export default ProfilePage

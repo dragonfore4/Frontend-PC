@@ -35,6 +35,8 @@ const ListPage = ({ searchParams }: { searchParams: SearchParams }) => {
             const result = data.filter((d: Project) => d.status_id == 2);
             console.log("result: ",data)
             setProjects(result);
+        } else {
+            setProjects([]);
         }
     };
 

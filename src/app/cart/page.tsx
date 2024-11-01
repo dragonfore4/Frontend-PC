@@ -2,15 +2,46 @@
 
 import CartList from '@/components/default/CartList'
 import { useAuth } from '../../contexts/AuthContext'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { checkout } from '@/functions/transactions'
-import { getCartIdByUsername } from '@/functions/carts'
-import {  ToastContainer } from 'react-toastify'
+import { deleteProjectFromCart, getCartDetails, getCartIdByUsername } from '@/functions/carts'
+import { ToastContainer } from 'react-toastify'
 import { showToast } from '@/utils/toastUtils'
+import Image from 'next/image'
+
+interface CartItem {
+    cart_id: number;
+    project_id: number;
+    project_name: string;
+    description: string;
+    price: number;
+    start_date: string;
+    end_date: string;
+    created_by: string;
+    project_type_name: string;
+    status_name: string;
+    image1: string;
+    image2: string;
+    image3: string;
+}
+
 
 const CartPage = () => {
 
     const auth = useAuth();
+
+    const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        const options: Intl.DateTimeFormatOptions = {
+            weekday: 'short',
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        };
+        return date.toLocaleDateString('en-US', options).replace(/,/g, '');
+    };
 
     const handleCheckout = async () => {
         console.log("clicked")
@@ -20,11 +51,42 @@ const CartPage = () => {
 
             if (response) {
                 const result = await response.json();
-                response.ok ? showToast(result.message,"success") : showToast(result.message,"error")
+                response.ok ? showToast(result.message, "success") : showToast(result.message, "error")
             }
         }
 
     }
+
+    const fetchCartDetails = async () => {
+        if (auth && auth.user) {
+            const cart_Id = await getCartIdByUsername(auth.user);  // Use auth.user.username for cart lookup
+            const response = await getCartDetails(cart_Id);  // Get the cart details by cart ID
+
+            // Format the start_date and end_date for each item
+            if (response == null) return;
+            const formattedCartItems = response.map((item: CartItem) => ({
+                ...item,
+                start_date: formatDate(item.start_date),
+                end_date: formatDate(item.end_date),
+            }));
+
+            setCartItems(formattedCartItems);  // Set the formatted cart items
+        }
+    };
+
+    const handleRemoveProjectFromCart = async (projectId: number) => {
+        if (auth && auth.user) {
+            const cartId = await getCartIdByUsername(auth.user);  // Get the cart ID by username
+            const res = await deleteProjectFromCart(cartId, projectId);  // Delete the project from the cart
+            console.log(res)
+            fetchCartDetails();  // Fetch the updated cart details
+        }
+    }
+
+
+    useEffect(() => {
+        fetchCartDetails();
+    }, [])
 
     return (
         <div className="max-w-6xl mx-auto p-6 bg-white shadow-md rounded-md ring-1 ring-gray-200">
@@ -36,36 +98,42 @@ const CartPage = () => {
                     <h2 className="text-xl font-semibold mb-4">Summary Order</h2>
                     <p className="text-gray-500 mb-4">Check your item and select your shipping for better experience order item.</p>
                     <div className="border p-4 rounded-md mb-6">
-                        <CartList />
-                    </div>
-                    <h3 className="text-lg font-semibold mb-4">Available Shipping Method</h3>
-                    <div className="border p-4 rounded-md mb-4">
-                        <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center">
-                                <img src="https://placehold.co/50x50" alt="Fedex Logo" className="w-12 h-12 object-cover mr-4" />
-                                <div>
-                                    <h4 className="font-semibold">Fedex Delivery</h4>
-                                    <p className="text-gray-500">Delivery: 2-3 days work</p>
+                        {/* <CartList /> */}
+                        <div className="flex flex-col items-center  gap-4">
+                            {cartItems.length > 0 && cartItems.map((item: CartItem) => (
+                                <div className='flex justify-between w-full' key={item.project_id}>
+                                    <div className='flex'>
+                                        <div className='h-20 w-20 relative mb-2 mr-8'>
+                                            <Image
+                                                src={`${process.env.NEXT_PUBLIC_API_PATH}/project_imagesByName/${item.image1}`}
+                                                alt={item.project_name}
+                                                fill
+                                                className='object-cover rounded-md'
+                                            />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-semibold">{item.project_name}</h3>
+                                            {
+                                                item.description.length > 13 ?
+                                                    <p className="text-gray-500">{item.description.substring(0, 13)}...</p>
+                                                    :
+                                                    <p className="text-gray-500">{item.description}</p>
+                                            }
+                                            <p className="font-semibold">{`$${item.price}`}</p>
+                                        </div>
+                                    </div>
+                                    <div className='flex flex-col items-end gap-8'>
+                                        <div className=' text-blue-500 cursor-pointer rounded-lg ring-1 px-2  w-max h-max hover:bg-red-300 hover:ring-red-300 hover:text-white' onClick={() => handleRemoveProjectFromCart(item.project_id)}>Remove</div>
+                                        {item.status_name === "Available" ? (<p></p>) : <p className='text-sm text-red-600 rounded-lg ring-1 px-2 ring-red-500'>Project Sold out Already!!</p>}
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="text-green-500 font-semibold">Free</div>
-                            <input type="radio" name="shipping" className="ml-4" />
+                            ))}
+                            {
+                                cartItems.length == 0 && <div>Cart is Empty</div>
+                            }
                         </div>
                     </div>
-                    <h3 className="text-lg font-semibold mb-4">Available International Shipping:</h3>
-                    <div className="border p-4 rounded-md">
-                        <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center">
-                                <img src="https://placehold.co/50x50" alt="DHL Logo" className="w-12 h-12 object-cover mr-4" />
-                                <div>
-                                    <h4 className="font-semibold">DHL Delivery</h4>
-                                    <p className="text-gray-500">Delivery: 3-5 days work</p>
-                                </div>
-                            </div>
-                            <div className="text-gray-500 font-semibold">$12.00</div>
-                            <input type="radio" name="shipping" className="ml-4" />
-                        </div>
-                    </div>
+
 
                 </div>
                 <div className='bg-[#f9fafc] p-6'>
@@ -98,17 +166,17 @@ const CartPage = () => {
                     <div className="border-t pt-4">
                         <div className="flex justify-between mb-2">
                             <span className="text-gray-700">Subtotal</span>
-                            <span className="font-semibold">$397.00</span>
+                            <span className="font-semibold">${cartItems.reduce((acc, cartItem) => acc + Number(cartItem.price),0).toFixed(2)}</span>
                         </div>
                         <div className="flex justify-between mb-2">
-                            <span className="text-gray-700">Vat (20%)</span>
-                            <span className="font-semibold">$2.89</span>
+                            <span className="text-gray-700">Vat (0%)</span>
+                            <span className="font-semibold">$0.00</span>
                         </div>
                         <div className="flex justify-between mb-4">
                             <span className="text-gray-700">Total</span>
-                            <span className="font-semibold text-xl">$399.89</span>
+                            <span className="font-semibold text-xl">${cartItems.reduce((acc, cartItem) => acc + Number(cartItem.price),0).toFixed(2)}</span>
                         </div>
-                        <button className="w-full bg-black text-white py-2 rounded-md font-semibold" onClick={handleCheckout}>Pay $399.89</button>
+                        <button className="w-full bg-black text-white py-2 rounded-md font-semibold" onClick={handleCheckout}>Pay ${cartItems.reduce((acc, item) => acc + Number(item.price), 0).toFixed(2)}</button>
                     </div>
                 </div>
             </div>

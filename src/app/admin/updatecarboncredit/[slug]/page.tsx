@@ -67,10 +67,10 @@ const UpdateCarbonCreditPage = ({ params }: { params: { slug: string } }) => {
                             {d.transaction_id ? d.transaction_id : 'N/A'}
                         </p>
                         <p className="text-gray-700">
-                            <span className="font-medium">Start Date:</span> {d.credit_start_date}
+                            <span className="font-medium">Start Date:</span> {d.credit_start_date.split('T')[0]}
                         </p>
                         <p className="text-gray-700">
-                            <span className="font-medium">End Date:</span> {d.credit_end_date}
+                            <span className="font-medium">End Date:</span> {d.credit_end_date.split('T')[0]}
                         </p>
                         <p className="text-gray-700">
                             <span className="font-medium">Credit Amount:</span>{' '}

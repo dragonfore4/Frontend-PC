@@ -14,6 +14,7 @@ export interface Project {
     issued_date: string; // ISO 8601 Date string
     expiry_date: string; // ISO 8601 Date string
     status_id: number;
+    created_by?: number;
 
 }
 
@@ -62,4 +63,12 @@ export interface ProjectImageUS {
 export interface DecodedToken {
     username: string;
     exp: number;
+}
+
+export interface Transaction {
+    transaction_id : number,
+    buyer_id: number,
+    transaction_date: Date,
+    amount: string,
+    status: string,
 }

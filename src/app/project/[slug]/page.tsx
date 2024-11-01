@@ -84,14 +84,14 @@ const ProjectIdPage = async ({ params }: { params: { slug: string } }) => {
                 <div className="h-[2px] bg-gray-100" />
                 <div className="flex justify-between">
                     <h2 className="font-bold text-2xl">${projectData.price}</h2>
-                    <div className="flex">
+                    <div className="flex justify-center items-center">
                         <Image
                             src="https://png.pngtree.com/png-vector/20230313/ourmid/pngtree-cartoon-leaf-illustration-vector-png-image_6644591.png"
                             alt=""
                             width={24}
                             height={24}
                         />
-                        <h2 className="font-medium text-2xl text-green-600 pl-2">Average: {meanCarbonCredits ? meanCarbonCredits : 0} TONS/YEARS</h2>
+                        <h2 className="font-medium text-xl text-green-600 pl-2 ">Average: {meanCarbonCredits ? meanCarbonCredits.toFixed(2) : 0} TONS/YEARS</h2>
                     </div>
                 </div>
                 <div className="h-[2px] bg-gray-100" />

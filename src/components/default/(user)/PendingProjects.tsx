@@ -1,8 +1,11 @@
+import { useAuth } from '@/contexts/AuthContext';
+import { getUserIdByUsername } from '@/functions/auth';
 import { listAllProjectDetails, updateProjectStatus } from '@/functions/projects';
 import { Project } from '@/types/type';
 import React, { useEffect, useState } from 'react'
 
 const PendingProjects = () => {
+    const auth = useAuth();
     const PROJECTS_PER_PAGE = 10;
 
     const [projects, setProjects] = useState<Project[]>([]);
@@ -10,12 +13,22 @@ const PendingProjects = () => {
     const [currentPageNumber, setCurrentPageNumber] = useState<number>(1);
 
     const fetchData = async () => {
+        const userIdRes = await getUserIdByUsername(auth!.user!);
+        const [userId] = await userIdRes.json();
+        console.log(userId.user_id)
         const response = await listAllProjectDetails(100000000);
-        if (response.ok) {
+        if (auth && auth.user == "admin" && response.ok) {
             const data = await response.json();
             setProjects(data);
         }
+        if (auth && auth.user != "admin") {
+            const data = await response.json();
+            console.log(data)
+            setProjects(data.filter((project: Project) => project.created_by === userId.user_id));
+        }
     };
+
+    console.log(projects)
 
     const handleProjectEachPage = () => {
         const lastIndex = currentPageNumber * PROJECTS_PER_PAGE;
@@ -45,12 +58,12 @@ const PendingProjects = () => {
         }
     };
 
-    console.log(projects)
+    // console.log(projects)
 
     return (
         <div className='h-full'>
             <div className='flex justify-between items-center mb-8'>
-                <h1 className=' text-2xl font-semibold '>All Project DashBoard <span className='text-gray-500'>{projects.filter(project => project.status_id===1).length} Total</span></h1>
+                <h1 className=' text-2xl font-semibold '>All Project DashBoard <span className='text-gray-500'>{projects.filter(project => project.status_id === 1).length} Total</span></h1>
                 <div className='h-[1px] bg-gray-300' />
             </div>
 
@@ -64,7 +77,7 @@ const PendingProjects = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {projectsEachPage.filter((project) => project.status_id === 1).map((project, index) => (
+                        {projectsEachPage.filter(project => project.status_id === 1).map((project, index) => (
                             <tr key={index} className='border-b'>
                                 <td className='py-4 flex items-center'>
                                     <div className='flex flex-col'>
@@ -80,7 +93,7 @@ const PendingProjects = () => {
                                     <button
                                         onClick={() => handleStatusUpdate(project.project_id)}
                                         className={`${project.status_id === 1 ? 'text-yellow-300' : ''} ${project.status_id === 2 ? 'cursor-not-allowed text-green-400' : ''}   ${project.status_id === 3 ? 'cursor-not-allowed text-red-400' : ''}`}
-                                        disabled={project.status_id === 2 || project.status_id === 3}
+                                        disabled={project.status_id === 2 || project.status_id === 3 || auth && auth.user != "admin"}
                                     >
                                         <p className='text-black'>Status: </p>
                                         {project.status_id === 1 ? 'Approve' : ''} {project.status_id === 2 ? 'Approved' : ''} {project.status_id === 3 ? 'Sold out' : ''}
@@ -88,6 +101,7 @@ const PendingProjects = () => {
                                     <button
                                         onClick={() => window.location.href = "/admin/updatecarboncredit/" + project.project_id}
                                         className={`text-green-500 `}
+                                        disabled={auth && auth.user != "admin"}
 
                                     >
                                         Update carboncredit

@@ -32,6 +32,7 @@ const AllProject = () => {
 
     useEffect(() => {
         handleProjectEachPage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [projects, currentPageNumber]);
 
     const totalPages = Math.ceil(projects.length / PROJECTS_PER_PAGE);
@@ -80,10 +81,11 @@ const AllProject = () => {
                                     }
                                         <button
                                             onClick={() => handleStatusUpdate(project.project_id)}
-                                            className={`${project.status_id === 2 ? 'cursor-not-allowed text-green-400' : 'cursor-pointer text-yellow-500'}`}
-                                            disabled={project.status_id === 2}
+                                            className={`${project.status_id === 1 ? 'text-yellow-300' : ''} ${project.status_id === 2 ? 'cursor-not-allowed text-green-400': ''}   ${project.status_id === 3 ? 'cursor-not-allowed text-red-400': ''}`}
+                                            disabled={project.status_id === 2 || project.status_id === 3}
                                         >
-                                            {project.status_id === 2 ? 'Approved' : 'Pending'}
+                                            <p className='text-black'>Status: </p>
+                                           {project.status_id === 1 ? 'Approve' : ''} {project.status_id === 2 ? 'Approved' : ''} {project.status_id === 3 ? 'Sold out' : ''} 
                                         </button>
                                         <button
                                             onClick={() => window.location.href = "/admin/updatecarboncredit/" + project.project_id}    

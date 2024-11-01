@@ -18,12 +18,13 @@ const ProductList = ({ limit, projectTypeId, min, max }: { projectTypeId?: strin
         if (projectTypeId === "0") {
             projectTypeId = ""
         }
-        const res = await listAllProjectDetails(limit ? limit : PRODUCT_PER_PAGE, projectTypeId, min, max);
+        // const res = await listAllProjectDetails(limit ? limit : PRODUCT_PER_PAGE, projectTypeId, min, max);
+        const res = await listAllProjectDetails(PRODUCT_PER_PAGE, projectTypeId, min, max);
         if (!res.ok) {
             return
         }
         const result = await res.json();
-        const data = result.filter((r:Project) => r.status_id == 2);
+        const data = result.filter((r:Project) => r.status_id == 2).slice(0, limit);
         setProjects(data); // Set the fetched projects
     };
 
@@ -31,6 +32,8 @@ const ProductList = ({ limit, projectTypeId, min, max }: { projectTypeId?: strin
         getProducts(); // Fetch projects when component mounts
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [limit,projectTypeId, min, max]); // The limit as a dependency in case it changes
+
+    console.log(limit, projects)    
 
     return (
         <div className="mt-12 flex gap-x-8 gap-y-16 justify-between flex-wrap ">
@@ -61,7 +64,8 @@ const ProductList = ({ limit, projectTypeId, min, max }: { projectTypeId?: strin
                         <span className="font-semibold">{project.price}$</span>
                     </div>
                     <div className="text-sm text-gray-500">
-                        {project.description}
+                        {project.description.length > 60 ? project.description.slice(0, 60) + "..." : project.description}
+
                     </div>
                     <button className="text-xs ring-1 ring-green-400 rounded-2xl px-4 py-2 w-max hover:bg-green-400 hover:text-white">View Project</button>
                 </Link>

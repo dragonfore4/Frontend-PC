@@ -19,6 +19,25 @@ export const readCarbonCredit = async (id: number) => {
     return res;
 }
 
+export const listCarbonCredit = async () => {
+    const token = getToken();
+    const res = await fetch(process.env.NEXT_PUBLIC_API_PATH + `/carboncredits/`,
+        {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                // "authorization": `Bearer ${token}`
+            }
+        }
+    );
+
+    // if (!res.ok) {
+    //     console.error("Failed to fetch project: ", res.statusText);
+    //     return null;
+    // }
+    return res;
+}
+
 export const update = async (carbon_credit_id: number, carbon_amount: number) => {
     const token = getToken();
     const res = await fetch(process.env.NEXT_PUBLIC_API_PATH + `/carboncredits/`,
@@ -46,6 +65,25 @@ export const update = async (carbon_credit_id: number, carbon_amount: number) =>
 export const listCarbonCreditByProjectId = async (projectId: number) => {
     const token = getToken();
     const res = await fetch(process.env.NEXT_PUBLIC_API_PATH + `/carboncredits/project/${projectId}`,
+        {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                // "authorization": `Bearer ${token}`
+            },
+            cache: "no-cache"
+        }
+    );
+    if (!res.ok) {
+        console.error("Failed to fetch project: ", res.statusText);
+        return null;
+    }
+    return res;
+}
+
+export const listCarbonCreditByTransactionId = async (transactionId: number) => {
+    const token = getToken();
+    const res = await fetch(process.env.NEXT_PUBLIC_API_PATH + `/carboncredits/project/${transactionId}`,
         {
             method: "GET",
             headers: {

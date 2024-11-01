@@ -55,7 +55,7 @@ const ProductList2 = ({ ProjectsData }: ProductList2Props) => {
                     </Link>
                 ))
             ) : (
-                <p>No projects available.</p>
+                <p>No projects match with conditions.</p>
             )}
         </div>
     );

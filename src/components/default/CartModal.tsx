@@ -72,7 +72,7 @@ const CartModal = () => {
     const otherItemsCount = cartItems.length - 2;  // Calculate how many other items are there
 
     return (
-        <div className="absolute top-12 flex flex-col p-4 rounded-md right-0 shadow-[0_3px_10px_rgb(0,0,0,0.2)] z-40 bg-white gap-6">
+        <div className="absolute top-12 flex flex-col p-4 rounded-md right-0 shadow-[0_3px_10px_rgb(0,0,0,0.2)] z-40 bg-white gap-6 cursor-default">
             {cartItems.length === 0 ? (
                 <div className="w-max">
                     <div className="pb-4">Cart is Empty</div>
@@ -119,7 +119,7 @@ const CartModal = () => {
                             </div>
                         )}
                     </div>
-                    <button className="rounded-lg px-2 py-1 ring-1 " onClick={() => window.location.href = "/cart"}>Go to Cart</button>
+                    <button className="rounded-lg px-2 py-1 ring-1 hover:bg-blue-400 hover:text-white" onClick={() => window.location.href = "/cart"}>Go to Cart</button>
                 </>
             )}
         </div>
