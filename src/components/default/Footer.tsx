@@ -63,7 +63,7 @@ export default function Footer() {
         <div className="w-full md:w-1/2 lg:w-1/4 flex flex-col gap-8">
           <h1 className="font-medium text-lg">SUBSCRIBE</h1>
           <p>
-            BE the firest to get the lastest news about trends, promiotions, and
+            BE the firest to get the lastest news about trends, promotions, and
             much more!
           </p>
           <div className="flex">
