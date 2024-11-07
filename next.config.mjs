@@ -13,6 +13,10 @@ const nextConfig = {
             {
                 protocol: 'http',
                 hostname: 'localhost'
+            },
+            {
+                protocol: 'https',
+                hostname: NEXT_PUBLIC_BACKEND_DOMAIN
             }
         ],
     },
