@@ -16,7 +16,7 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: NEXT_PUBLIC_BACKEND_DOMAIN
+                hostname: process.env.NEXT_PUBLIC_BACKEND_DOMAIN
             }
         ],
     },
