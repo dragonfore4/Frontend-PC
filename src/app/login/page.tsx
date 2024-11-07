@@ -33,9 +33,10 @@ function LoginPage() {
                 showToast(result.message || "Login successful!", "success");
 
                 // Redirect after 3 seconds
-                // setTimeout(() => {
-                //     window.location.href = "/"; // Use Next.js's router for redirection
-                // }, 3000);
+                setTimeout(() => {
+                    // window.location.href = "/"; // Use Next.js's router for redirection
+                    window.location.reload();
+                }, 3000);
             } else {
                 const result = await response.json();
                 showToast(result.message || "Login failed", "error");
